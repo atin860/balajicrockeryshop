@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Base styles
+   ============================================================ */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Leave room for the sticky navbar when jumping to #anchors */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+    /* Guarantee no horizontal scrolling anywhere */
+    overflow-x: clip;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Hindi needs a little more line-height and a slightly larger size to stay readable */
+  html[lang='hi'] body {
+    @apply font-hindi;
+    line-height: 1.7;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading font-semibold tracking-tight text-ink;
+    line-height: 1.2;
+  }
+
+  /* Letter-spacing breaks Devanagari conjuncts and the top line (shirorekha) —
+     switch it off for Hindi everywhere, including uppercase "eyebrow" labels. */
+  html[lang='hi'] [class*='tracking-'] {
+    letter-spacing: 0 !important;
+  }
+
+  html[lang='hi'] h1,
+  html[lang='hi'] h2,
+  html[lang='hi'] h3,
+  html[lang='hi'] h4 {
+    line-height: 1.35;
+  }
+
+  img {
+    @apply max-w-full;
+  }
+
+  /* Visible, consistent keyboard focus for every interactive element */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-cream;
+  }
+
+  ::selection {
+    @apply bg-accent-light text-ink;
+  }
+}
+
+/* ============================================================
+   Reusable layout helpers
+   ============================================================ */
+@layer components {
+  /* Centered 1280px content wrapper with responsive gutters */
+  .container-page {
+    /* Gutters: 16px phones · 24px tablets · 32px desktop (matched by the -mx-4 sm:-mx-6 scroll rows) */
+    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Vertical rhythm for page sections (8px scale) */
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  /* Below-the-fold sections: the browser skips their layout/paint until they are near the screen */
+  .defer-render {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+
+  /* Hide scrollbar but keep scrolling (carousels, chip rows) */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Respect users who prefer reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

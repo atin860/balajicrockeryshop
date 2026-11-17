@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Default language is Hindi; LanguageContext updates the lang attribute when the user toggles. -->
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Default SEO tags. Each page overrides title/description via react-helmet-async. -->
+    <title>Shri Balaji Dona Pattal Store | Wholesale Disposable Crockery, Bilsanda (Pilibhit)</title>
+    <meta
+      name="description"
+      content="Wholesale & retail dona, pattal, bhojan thali, disposable glasses, bowls, spoons and aluminium foil for weddings, namkaran and bhandara in Bilsanda, Pilibhit. Order easily on WhatsApp."
+    />
+    <meta
+      name="keywords"
+      content="dona pattal Bilsanda, disposable plates Pilibhit, wholesale dona pattal shop, shaadi disposable items Bilsanda, disposable crockery, paper plates, bhojan thali, disposable glass"
+    />
+    <meta name="theme-color" content="#C62828" />
+
+    <!-- Developer credit (required) -->
+    <meta name="author" content="Vsafe Softwares Pvt. Ltd." />
+    <meta name="designer" content="Vsafe Softwares Pvt. Ltd." />
+
+    <!-- Favicon & icons (files are added in /public/images/logo) -->
+    <link rel="icon" type="image/svg+xml" href="/images/logo/logo.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/images/logo/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png" />
+
+    <!-- Home page: start downloading the first hero photo immediately (faster first paint) -->
+    <script>
+      if (location.pathname === '/') {
+        var l = document.createElement('link');
+        l.rel = 'preload';
+        l.as = 'image';
+        l.href = '/images/hero/hero-1.webp';
+        l.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(l);
+      }
+    </script>
+
+    <!-- Open Graph defaults (absolute URLs are set per page by the Seo component) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Shri Balaji Dona Pattal Store" />
+    <meta property="og:locale" content="hi_IN" />
+    <meta property="og:locale:alternate" content="en_IN" />
+    <meta property="og:image" content="/images/logo/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <noscript>
+      Please enable JavaScript to use this website. Call us: +91 84450 09955 / +91 93689 05883.
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
