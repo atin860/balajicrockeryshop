@@ -15,6 +15,12 @@ npm-debug.log*
 !.vscode/extensions.json
 .idea/
 
+# Vercel CLI link info (IDs go in GitHub secrets, not in git)
+.vercel/
+
+# Local Claude Code preview settings
+.claude/
+
 # Env
 .env
 .env.*

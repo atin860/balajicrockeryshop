@@ -182,9 +182,18 @@ The build output is a static site in `dist/`. Both Netlify and Vercel host it fr
 2. New site → import the repository. Settings are read from `netlify.toml` (build `npm run build`, publish `dist`).
 3. `public/_redirects` makes page links like `/products/dona` work on refresh.
 
-### Vercel
-1. Push to GitHub → vercel.com → **Add New Project** → import the repository.
-2. Framework preset **Vite** (build `npm run build`, output `dist`). `vercel.json` handles page routing and caching.
+### Vercel with GitHub Actions auto-deploy (set up in this project)
+`.github/workflows/deploy.yml` tests, builds and deploys on every push to `main` (production) and on every
+pull request (preview link in the run summary). Vercel's own Git deploys are switched off in `vercel.json`
+so each push deploys exactly once. One-time setup:
+
+1. Create a Vercel account and link the project from this folder: `npx vercel login`, then `npx vercel link`
+   (creates `.vercel/project.json`, which is git-ignored).
+2. Create a token at https://vercel.com/account/tokens.
+3. In GitHub → repository **Settings → Secrets and variables → Actions**, add:
+   `VERCEL_TOKEN` (the token), `VERCEL_ORG_ID` (`orgId` from `.vercel/project.json`),
+   `VERCEL_PROJECT_ID` (`projectId` from `.vercel/project.json`).
+4. Push to `main` (or open **Actions → Deploy to Vercel → Run workflow**).
 
 After deploying, set `siteUrl` in `src/config/shop.js` to your real address and deploy again.
 Then add the site to **Google Search Console** and submit `https://your-domain/sitemap.xml`, and link it from your

@@ -1,0 +1,90 @@
+# Auto-deploy to Vercel
+# ---------------------
+# - Push to main            → tests + build → Vercel PRODUCTION deploy
+# - Pull request into main  → tests + build → Vercel PREVIEW deploy (link in the run summary)
+# - "Run workflow" button   → manual production deploy
+#
+# One-time setup (GitHub repo → Settings → Secrets and variables → Actions → New repository secret):
+#   VERCEL_TOKEN       a token from https://vercel.com/account/tokens
+#   VERCEL_ORG_ID      "orgId"     from .vercel/project.json (created by `npx vercel link`)
+#   VERCEL_PROJECT_ID  "projectId" from .vercel/project.json
+#
+# Vercel's own Git auto-deploy is switched off in vercel.json ("git.deploymentEnabled": false)
+# so each push is deployed exactly once — by this workflow.
+
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: vercel-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+  deploy:
+    name: Deploy (${{ github.event_name == 'pull_request' && 'preview' || 'production' }})
+    needs: test
+    runs-on: ubuntu-latest
+    # Pull requests from forks don't get secrets — skip their deploy instead of failing.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ENV: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Check Vercel secrets
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::error::Add VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID in GitHub → Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=$VERCEL_ENV --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        run: vercel build ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Deployed to Vercel ($VERCEL_ENV)" >> "$GITHUB_STEP_SUMMARY"
+          echo "$url" >> "$GITHUB_STEP_SUMMARY"
