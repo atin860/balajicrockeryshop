@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "images": "node scripts/generate-placeholders.mjs"
+    "images": "node scripts/generate-placeholders.mjs",
+    "images:real": "node scripts/process-crockery-images.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "5.1.0",
